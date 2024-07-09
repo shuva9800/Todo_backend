@@ -72,3 +72,28 @@ exports.removeTask = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+
+//update priority
+exports.updateTaskPriority = async (req, res) => {
+  try {
+    const { todoId, taskId, priority } = req.body;
+
+    const todo = await Todo.findById(todoId);
+    if (!todo) {
+      return res.status(404).json({ message: 'Todo list not found' });
+    }
+
+    const task = todo.tasks.id(taskId);
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    task.priority = priority;
+    await todo.save();
+
+    res.json({ todo });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
